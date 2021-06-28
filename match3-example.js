@@ -33,12 +33,15 @@ window.onload = function() {
     // Mouse dragging
     var drag = false;
     
+    //Movimientos disp onibles para endgame
+    movDisponibles = 3;
+
     // Level object
     var level = {
-        x: 250,         // X position
-        y: 113,         // Y position
-        columns: 8,     // Number of tile columns
-        rows: 8,        // Number of tile rows
+        x: 230,         // X position
+        y: 75,         // Y position
+        columns: 10,     // Number of tile columns
+        rows: 10,        // Number of tile rows
         tilewidth: 40,  // Visual width of a tile
         tileheight: 40, // Visual height of a tile
         tiles: [],      // The two-dimensional tile array
@@ -133,10 +136,28 @@ window.onload = function() {
             // Game is ready for player input
             
             // Check for game over
-            if (moves.length <= 0) {
+            // if (moves.length <= 0) {
+            //     gameover = true;
+            // }
+            if(movDisponibles <= 0)
+            {
+                if (gameover == false)
+                {
+                    //Updatear Highscore 
+                    HighScore = parseInt(document.getElementById('HighScore').innerText) || 0;
+                    if(score > HighScore)
+                    {
+                        playerName = document.getElementById('input-box').value;
+                        console.log(playerName);
+
+                        var newListItem = document.createElement('li');
+                        newListItem.appendChild(document.createTextNode(playerName + ' : ' + score));
+                        document.getElementById('HighScore').appendChild(newListItem);
+                    }
+                }
                 gameover = true;
             }
-            
+
             // Let the AI bot make a move, if enabled
             if (aibot) {
                 animationtime += dt;
@@ -222,6 +243,7 @@ window.onload = function() {
                         animationtime = 0;
                     }
                     
+                    movDisponibles = movDisponibles - 1;
                     // Update moves and clusters
                     findMoves();
                     findClusters();
@@ -274,7 +296,10 @@ window.onload = function() {
         context.font = "24px Verdana";
         drawCenterText("Score:", 30, level.y+40, 150);
         drawCenterText(score, 30, level.y+70, 150);
-        
+
+        // Draw Turnos disponibles
+        drawCenterText("Turnos:", 30, level.y+90, 150);
+        drawCenterText(movDisponibles, 30, level.y+120, 150);
         // Draw buttons
         drawButtons();
         
@@ -455,15 +480,19 @@ window.onload = function() {
     
     // Start a new game
     function newGame() {
+
         // Reset score
         score = 0;
-        
+            
+        // Reset Movimientos disponibles
+        movDisponibles = 3;
+
         // Set the gamestate to ready
         gamestate = gamestates.ready;
         
         // Reset game over
         gameover = false;
-        
+
         // Create the level
         createLevel();
         
